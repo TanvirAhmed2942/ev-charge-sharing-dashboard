@@ -1,0 +1,73 @@
+"use client"
+
+import { ChevronRight, type LucideIcon } from "lucide-react"
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import {
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from "@/components/ui/sidebar"
+
+export function NavBookings({
+  section,
+  groupLabel,
+}: {
+  section: {
+    title: string
+    url?: string
+    icon?: LucideIcon | React.ElementType
+    isActive?: boolean
+    items: Array<{ title: string; url: string }>
+  }
+  groupLabel?: string
+}) {
+  return (
+    <SidebarGroup className="pt-4">
+      {groupLabel && (
+        <SidebarGroupLabel className="mb-1 px-2 text-xs font-semibold text-sidebar-foreground/70">
+          {groupLabel}
+        </SidebarGroupLabel>
+      )}
+      <SidebarMenu>
+        <Collapsible
+          asChild
+          defaultOpen={section.isActive}
+          className="group/collapsible"
+        >
+          <SidebarMenuItem>
+            <CollapsibleTrigger asChild>
+              <SidebarMenuButton tooltip={section.title}>
+                {section.icon && <section.icon className="size-4" />}
+                <span>{section.title}</span>
+                <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+              </SidebarMenuButton>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <SidebarMenuSub>
+                {section.items.map((subItem) => (
+                  <SidebarMenuSubItem key={subItem.title}>
+                    <SidebarMenuSubButton asChild>
+                      <a href={subItem.url}>
+                        <span>{subItem.title}</span>
+                      </a>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                ))}
+              </SidebarMenuSub>
+            </CollapsibleContent>
+          </SidebarMenuItem>
+        </Collapsible>
+      </SidebarMenu>
+    </SidebarGroup>
+  )
+}

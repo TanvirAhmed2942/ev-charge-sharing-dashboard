@@ -1,0 +1,129 @@
+"use client"
+
+import * as React from "react"
+import {
+  BookOpen,
+  GalleryVerticalEnd,
+  Settings2,
+  Users,
+} from "lucide-react"
+import { LuLayoutDashboard } from "react-icons/lu";
+import { LuCircleParking } from "react-icons/lu";
+import { NavMain } from "@/components/nav-main"
+import { IoWalletOutline } from "react-icons/io5";
+import { NavUser } from "@/components/nav-user"
+import { TeamSwitcher } from "@/components/team-switcher"
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+} from "@/components/ui/sidebar"
+import { NavBookings } from "./nav-projects";
+
+// This is sample data.
+const data = {
+  user: {
+    name: "shadcn",
+    email: "m@example.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+  company: {
+    name: "Company Name",
+    logo: GalleryVerticalEnd,
+    plan: "Company Plan",
+  },
+  navMain: [
+    {
+      title: "Dashboard",
+      url: "#",
+      icon: LuLayoutDashboard,
+    },
+    {
+      title: "User Management",
+      url: "#",
+      icon: Users,
+      items: [
+        {
+          title: "All Users",
+          url: "#",
+        },
+        {
+          title: "EV Owners",
+          url: "#",
+        },
+        {
+          title: "Parking Space Owners",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Parking Space Management",
+      url: "#",
+      icon: LuCircleParking,
+      items: [
+        {
+          title: "Waiting for Approval",
+          url: "#",
+        },
+        {
+          title: "Active/Approved",
+          url: "#",
+        },
+        {
+          title: "Inactive/Rejected",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Payment Monitoring",
+      url: "#",
+      icon: IoWalletOutline,
+    },
+  ],
+  booking: {
+    title: "Booking",
+    url: "#",
+    icon: BookOpen,
+    items: [
+      { title: "All Bookings", url: "#" },
+      { title: "Upcoming", url: "#" },
+      { title: "Ongoing", url: "#" },
+      { title: "Completed", url: "#" },
+      { title: "Cancelled", url: "#" },
+    ],
+  },
+  settings: {
+    title: "Settings",
+    url: "#",
+    icon: Settings2,
+    items: [
+      { title: "Terms & Conditions", url: "#" },
+      { title: "Privacy Policy", url: "#" },
+      { title: "About Us", url: "#" },
+      { title: "FAQ", url: "#" },
+    ],
+  },
+}
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  return (
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <TeamSwitcher company={data.company} />
+      </SidebarHeader>
+      <SidebarContent>
+        <NavMain items={data.navMain} groupLabel="Platform" />
+        <NavBookings section={data.booking} groupLabel="Booking" />
+        <NavBookings section={data.settings} groupLabel="Settings" />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  )
+}
