@@ -37,7 +37,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard/overview",
       icon: LuLayoutDashboard,
     },
     {
@@ -46,16 +46,12 @@ const data = {
       icon: Users,
       items: [
         {
-          title: "All Users",
-          url: "#",
-        },
-        {
           title: "EV Owners",
-          url: "#",
+          url: "/dashboard/user-management/ev-owners",
         },
         {
           title: "Parking Space Owners",
-          url: "#",
+          url: "/dashboard/user-management/parking-space-owners",
         },
       ],
     },
