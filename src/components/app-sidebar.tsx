@@ -76,7 +76,7 @@ const data = {
     },
     {
       title: "Payment Monitoring",
-      url: "#",
+      url: "/dashboard/payment-monitoring",
       icon: IoWalletOutline,
     },
   ],
