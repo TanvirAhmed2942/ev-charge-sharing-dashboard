@@ -27,7 +27,11 @@ export function NavBookings({
     url?: string
     icon?: LucideIcon | React.ElementType
     isActive?: boolean
-    items: Array<{ title: string; url: string }>
+    items: Array<{
+      title: string
+      url: string
+      onClick?: () => void
+    }>
   }
   groupLabel?: string
 }) {
@@ -56,11 +60,19 @@ export function NavBookings({
               <SidebarMenuSub>
                 {section.items.map((subItem) => (
                   <SidebarMenuSubItem key={subItem.title}>
-                    <SidebarMenuSubButton asChild>
-                      <a href={subItem.url}>
+                    {subItem.onClick ? (
+                      <SidebarMenuSubButton
+                        onClick={subItem.onClick}
+                      >
                         <span>{subItem.title}</span>
-                      </a>
-                    </SidebarMenuSubButton>
+                      </SidebarMenuSubButton>
+                    ) : (
+                      <SidebarMenuSubButton asChild>
+                        <a href={subItem.url}>
+                          <span>{subItem.title}</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    )}
                   </SidebarMenuSubItem>
                 ))}
               </SidebarMenuSub>

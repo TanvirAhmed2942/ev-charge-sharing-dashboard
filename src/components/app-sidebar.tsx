@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useState } from "react"
 import {
   BookOpen,
   GalleryVerticalEnd,
@@ -20,7 +21,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { NavBookings } from "./nav-projects";
+import { NavBookings } from "./nav-projects"
+import CommissionSettingsModal from "@/components/settings/CommissionSettingsModal"
 
 // This is sample data.
 const data = {
@@ -97,6 +99,7 @@ const data = {
     url: "#",
     icon: Settings2,
     items: [
+      { title: "Commission", url: "#" },
       { title: "Terms & Conditions", url: "#" },
       { title: "Privacy Policy", url: "#" },
       { title: "About Us", url: "#" },
@@ -106,20 +109,37 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const [commissionModalOpen, setCommissionModalOpen] = useState(false)
+
+  const settingsSection = {
+    ...data.settings,
+    items: data.settings.items.map((item) =>
+      item.title === "Commission"
+        ? { ...item, onClick: () => setCommissionModalOpen(true) }
+        : item
+    ),
+  }
+
   return (
-    <Sidebar collapsible="icon" {...props} className="bg-linear-to-b from-emerald-900 to-emerald-600">
-      <SidebarHeader>
-        <TeamSwitcher company={data.company} />
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} groupLabel="Platform" />
-        <NavBookings section={data.booking} groupLabel="Booking" />
-        <NavBookings section={data.settings} groupLabel="Settings" />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+    <>
+      <Sidebar collapsible="icon" {...props} className="bg-linear-to-b from-emerald-900 to-emerald-600">
+        <SidebarHeader>
+          <TeamSwitcher company={data.company} />
+        </SidebarHeader>
+        <SidebarContent>
+          <NavMain items={data.navMain} groupLabel="Platform" />
+          <NavBookings section={data.booking} groupLabel="Booking" />
+          <NavBookings section={settingsSection} groupLabel="Settings" />
+        </SidebarContent>
+        <SidebarFooter>
+          <NavUser user={data.user} />
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+      <CommissionSettingsModal
+        open={commissionModalOpen}
+        onOpenChange={setCommissionModalOpen}
+      />
+    </>
   )
 }
