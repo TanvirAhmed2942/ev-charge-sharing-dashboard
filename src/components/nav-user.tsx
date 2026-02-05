@@ -29,6 +29,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { CgProfile } from "react-icons/cg";
+import { LuLock } from "react-icons/lu"
 
 export function NavUser({
   user,
@@ -82,19 +84,12 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
+                <CgProfile />
+                My Profile
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <CreditCard />
-                Billing
+                <LuLock />
+                Change Password
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <Bell />

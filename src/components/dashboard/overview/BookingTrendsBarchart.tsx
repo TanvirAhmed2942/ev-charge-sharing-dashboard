@@ -89,6 +89,7 @@ export default function BookingTrendsBarchart({
                                 contentStyle={{
                                     borderRadius: "var(--radius)",
                                     border: "1px solid hsl(var(--border))",
+                                    backgroundColor: "#e3f3f7",
                                 }}
                                 formatter={(value) => [value ?? 0, "bookings"]}
                                 labelFormatter={(label) => `Day: ${label}`}
