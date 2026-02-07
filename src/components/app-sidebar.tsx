@@ -87,11 +87,11 @@ const data = {
     url: "#",
     icon: BookOpen,
     items: [
-      { title: "All Bookings", url: "#" },
-      { title: "Upcoming", url: "#" },
-      { title: "Ongoing", url: "#" },
-      { title: "Completed", url: "#" },
-      { title: "Cancelled", url: "#" },
+
+      { title: "Upcoming", url: "/dashboard/booking-management/upcoming" },
+      { title: "Ongoing", url: "/dashboard/booking-management/ongoing" },
+      { title: "Completed", url: "/dashboard/booking-management/completed" },
+      { title: "Declined", url: "/dashboard/booking-management/declined" },
     ],
   },
   settings: {
