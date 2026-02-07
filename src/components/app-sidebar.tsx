@@ -100,10 +100,10 @@ const data = {
     icon: Settings2,
     items: [
       { title: "Commission", url: "#" },
-      { title: "Terms & Conditions", url: "#" },
-      { title: "Privacy Policy", url: "#" },
-      { title: "About Us", url: "#" },
-      { title: "FAQ", url: "#" },
+      { title: "Terms & Conditions", url: "/dashboard/policies/terms-and-con" },
+      { title: "Privacy Policy", url: "/dashboard/policies/privacy-policy" },
+      { title: "About Us", url: "/dashboard/policies/about-us" },
+      { title: "FAQ", url: "/dashboard/faq" },
     ],
   },
 }

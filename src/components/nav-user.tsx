@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/sidebar"
 import { CgProfile } from "react-icons/cg";
 import { LuLock } from "react-icons/lu"
+import { useRouter } from "next/navigation"
 
 export function NavUser({
   user,
@@ -42,7 +43,7 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
-
+  const router = useRouter()
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -87,11 +88,11 @@ export function NavUser({
                 <CgProfile />
                 My Profile
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem >
                 <LuLock />
                 Change Password
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/dashboard/notifications")}>
                 <Bell />
                 Notifications
               </DropdownMenuItem>
