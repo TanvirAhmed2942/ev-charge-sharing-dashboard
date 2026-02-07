@@ -64,15 +64,15 @@ const data = {
       items: [
         {
           title: "Waiting for Approval",
-          url: "#",
+          url: "/dashboard/parking-management/waiting-for-approval",
         },
         {
           title: "Active/Approved",
-          url: "#",
+          url: "/dashboard/parking-management/active-approved",
         },
         {
           title: "Inactive/Rejected",
-          url: "#",
+          url: "/dashboard/parking-management/inactive-rejected",
         },
       ],
     },
