@@ -9,12 +9,12 @@ export default function AuthLayout({
     <div className="min-h-screen flex bg-background">
       {/* Left side – cover image */}
       <aside className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative overflow-hidden">
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 tracking-[20rem]  drop-shadow-[0_0_20px_rgba(34,211,238,0.5)]">
           <Image
-            src="/auth/auth_3.jpg"
+            src="/auth/auth_33.png"
             alt=""
             fill
-            className="object-cover"
+            className="object-cover "
             priority
           />
         </div>
