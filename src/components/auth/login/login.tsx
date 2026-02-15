@@ -13,16 +13,20 @@ import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
-
+import { IoArrowDown } from "react-icons/io5";
 
 export default function Login() {
-    const router = useRouter();
+    const router = useRouter()
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+    };
+
+    const handleLogin = () => {
+        router.push("/dashboard/overview");
     };
 
     return (
@@ -114,7 +118,9 @@ export default function Login() {
                     <Button
                         type="submit"
                         className="w-full bg-black/70 hover:bg-black text-white hover:text-white  font-medium py-2.5 transition-all duration-200 hover:shadow-lg hover:shadow-secondary/25 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={handleLogin}
                     >
+                        <IoArrowDown className="h-4 w-4 animate-bounce" />
                         Sign In
                     </Button>
                 </form>

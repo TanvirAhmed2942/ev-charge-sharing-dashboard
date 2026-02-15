@@ -1,8 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 
+// Placeholder reducer until you add slices (e.g. with createSlice).
+// Replace or add reducers: reducer: { mySlice: mySlice.reducer }
+const placeholderReducer = (state: Record<string, never> = {}) => state;
+
 export const makeStore = () => {
   return configureStore({
-    reducer: {},
+    reducer: {
+      _root: placeholderReducer,
+    },
   });
 };
 
