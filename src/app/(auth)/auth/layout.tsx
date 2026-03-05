@@ -19,9 +19,9 @@ export default function AuthLayout({
             priority
           />
         </div>
-        <div className="absolute top-0 left-0 w-full h-full z-10">
+        {/* <div className="absolute top-0 left-0 w-full h-full z-10">
           <ZapAnimation />
-        </div>
+        </div> */}
       </aside>
 
       {/* Right side – auth forms (login, forgot-password, verify-email, reset-password) */}

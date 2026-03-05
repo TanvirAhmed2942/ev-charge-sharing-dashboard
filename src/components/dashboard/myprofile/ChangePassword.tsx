@@ -1,36 +1,59 @@
 "use client";
+
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
 import useToast from "@/hooks/useToast";
-import { Eye, EyeOff } from "lucide-react";
-
-type ChangePasswordForm = {
+import { Eye, EyeOff, Loader } from "lucide-react";
+import { useChangePasswordMutation } from "@/store/Apis/authApis/authApi";
+import { getApiErrorMessage, type RtkQueryError } from "@/lib/apiError";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+type ChangePasswordFormData = {
     oldPassword: string;
     newPassword: string;
     confirmPassword: string;
 };
 
 const ChangePassword = () => {
-    const { success, error } = useToast();
+    const toast = useToast();
+    const router = useRouter();
+    const [changePassword, { isLoading }] = useChangePasswordMutation();
     const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
         watch,
-    } = useForm<ChangePasswordForm>({
+        reset,
+    } = useForm<ChangePasswordFormData>({
         mode: "onChange",
+        defaultValues: { oldPassword: "", newPassword: "", confirmPassword: "" },
     });
 
-    const onSubmit = () => {
-        // Add your API call here; use toast.success() / toast.error() for feedback
-        success("Password changed successfully");
-        error("Failed to change password");
+    const onSubmit = async (data: ChangePasswordFormData) => {
+        const res = await changePassword({
+            oldPassword: data.oldPassword,
+            newPassword: data.newPassword,
+        });
+        if (res.error) {
+            toast.error(getApiErrorMessage(res.error as RtkQueryError));
+            return;
+        }
+        if (res.data?.success) {
+            toast.success("Password changed successfully");
+            reset();
+            Cookies.remove("token");
+            Cookies.remove("refreshToken");
+            router.push("/auth/login");
+        } else {
+            toast.error(res.data?.message ?? "Failed to change password");
+        }
     };
     return (
         <Card className="w-full max-w-md mx-auto">
@@ -51,8 +74,7 @@ const ChangePassword = () => {
                                         message: "Password must be at least 8 characters",
                                     },
                                 })}
-                                className={`pr-10 ${errors.oldPassword ? "border-red-500" : ""
-                                    }`}
+                                className={`pr-10 ${errors.oldPassword ? "border-destructive" : ""}`}
                             />
                             <Button
                                 type="button"
@@ -69,8 +91,8 @@ const ChangePassword = () => {
                             </Button>
                         </div>
                         {errors.oldPassword?.message && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.oldPassword?.message}
+                            <p className="text-destructive text-sm mt-1">
+                                {errors.oldPassword.message}
                             </p>
                         )}
                     </div>
@@ -87,8 +109,7 @@ const ChangePassword = () => {
                                         message: "Password must be at least 8 characters",
                                     },
                                 })}
-                                className={`pr-10 ${errors.newPassword ? "border-red-500" : ""
-                                    }`}
+                                className={`pr-10 ${errors.newPassword ? "border-destructive" : ""}`}
                             />
                             <Button
                                 type="button"
@@ -105,8 +126,8 @@ const ChangePassword = () => {
                             </Button>
                         </div>
                         {errors.newPassword?.message && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.newPassword?.message}
+                            <p className="text-destructive text-sm mt-1">
+                                {errors.newPassword.message}
                             </p>
                         )}
                     </div>
@@ -123,8 +144,7 @@ const ChangePassword = () => {
                                         return value === newPassword || "Passwords do not match";
                                     },
                                 })}
-                                className={`pr-10 ${errors.confirmPassword ? "border-red-500" : ""
-                                    }`}
+                                className={`pr-10 ${errors.confirmPassword ? "border-destructive" : ""}`}
                             />
                             <Button
                                 type="button"
@@ -141,17 +161,24 @@ const ChangePassword = () => {
                             </Button>
                         </div>
                         {errors.confirmPassword?.message && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors.confirmPassword?.message}
+                            <p className="text-destructive text-sm mt-1">
+                                {errors.confirmPassword.message}
                             </p>
                         )}
                     </div>
 
                     <Button
                         type="submit"
+                        disabled={isLoading}
                         className="w-full bg-black/70 hover:bg-black text-white hover:text-white font-medium py-2.5 transition-all duration-200 hover:shadow-lg hover:shadow-secondary/25 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Change Password
+                        {isLoading ? (
+                            <>
+                                Changing... <Loader className="inline h-4 w-4 animate-spin" />
+                            </>
+                        ) : (
+                            "Change Password"
+                        )}
                     </Button>
                 </form>
             </CardContent>

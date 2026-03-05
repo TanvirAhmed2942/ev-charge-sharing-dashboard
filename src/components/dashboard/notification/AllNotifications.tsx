@@ -132,7 +132,6 @@ function AllNotifications({
                 </div>
 
                 {!notification?.isRead &&
-                  userRole !== "admin" &&
                   userRole !== "super_admin" && (
                     <Button variant="outline" className="bg-white" disabled>
                       Mark as read

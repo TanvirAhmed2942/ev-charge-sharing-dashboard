@@ -25,7 +25,7 @@ export default function DashboardLayout({
 }>) {
     return (
         <AuthLayoutWrapper
-            allowedRoles={["admin", "super_admin"]}
+            allowedRoles={["super_admin"]}
             requireAuth={true}
             redirectOnMount={true}
         >

@@ -260,23 +260,6 @@ export const authApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["Auth"],
     }),
-    changePasswordVerfication: builder.mutation<
-      ChangePasswordResponse,
-      ChangePasswordRequest
-    >({
-      query: (body: ChangePasswordRequest) => {
-        const token = Cookies.get("token");
-        return {
-          url: "/auth/change-password-verification",
-          method: "PATCH",
-          body: body,
-          headers: {
-            token: token || "",
-          },
-        };
-      },
-      invalidatesTags: ["Auth"],
-    }),
   }),
   overrideExisting: true,
 });
@@ -291,5 +274,4 @@ export const {
   useResendForgotPasswordOtpMutation,
   useResetPasswordMutation,
   useChangePasswordMutation,
-  useChangePasswordVerficationMutation,
 } = authApi;
