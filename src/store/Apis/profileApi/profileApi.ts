@@ -6,19 +6,18 @@ interface GetProfileResponse {
   data?: {
     _id: string;
     profile: string;
-    first_name: string;
-    last_name: string;
+    fullName: string;
     email: string;
     role: string;
     isActive: boolean;
     isDeleted: boolean;
     phone: string;
-    dateOfBirth: string;
+    isVerified: boolean;
     gender: string;
-    twoStepVerification: boolean;
+    isStripeConnectedAccount: boolean;
+    adminComission: number;
     createdAt: string;
     updatedAt: string;
-    isSubscriberUser: boolean;
   };
   error?: string;
 }
@@ -30,13 +29,11 @@ interface UpdateProfileResponse {
   };
   error?: string;
 }
-interface UpdateProfileRequest {
-  first_name: string;
-  last_name: string;
+/** Only fullName, phone, and profile (file) are sent. Email is not updatable. */
+export interface UpdateProfileRequest {
+  fullName: string;
   phone: string;
-  dateOfBirth: string;
-  gender: string;
-  profile?: string;
+  profileFile?: File;
 }
 
 export interface ActivityLogItem {
@@ -79,70 +76,25 @@ export const profileApi = baseApi.injectEndpoints({
     }),
     updateProfile: builder.mutation<
       UpdateProfileResponse,
-      UpdateProfileRequest & { profileFile?: File }
+      UpdateProfileRequest
     >({
       query: (body) => {
-        const { profileFile, ...rest } = body;
-        // Ensure payload uses snake_case (first_name, last_name) for the API
-        const firstName =
-          (rest as Record<string, unknown>).first_name ??
-          (rest as Record<string, unknown>).firstName ??
-          "";
-        const lastName =
-          (rest as Record<string, unknown>).last_name ??
-          (rest as Record<string, unknown>).lastName ??
-          "";
-
         const formData = new FormData();
-        formData.append("first_name", String(firstName));
-        formData.append("last_name", String(lastName));
-        formData.append("phone", rest.phone);
-        formData.append("dateOfBirth", rest.dateOfBirth);
-        formData.append("gender", rest.gender);
-
-        // Always append profile field - file if changed, otherwise existing profile string (or empty string)
-        if (profileFile) {
-          formData.append("profile", profileFile);
-        } else {
-          formData.append("profile", rest.profile || "");
+        formData.append("fullName", body.fullName);
+        formData.append("phone", body.phone);
+        if (body.profileFile) {
+          formData.append("profile", body.profileFile);
         }
-
         return {
           url: "/users/update-my-profile",
           method: "PATCH",
           body: formData,
-          formData: true, // use FormData as-is so keys stay first_name/last_name
         };
       },
       invalidatesTags: ["Profile"],
-    }),
-    twoStepVerification: builder.mutation<GetProfileResponse, void>({
-      query: () => {
-        return {
-          url: "/users/two-step-varification-on-of",
-          method: "POST",
-        };
-      },
-      invalidatesTags: ["Profile"],
-    }),
-    getActivityLog: builder.query<
-      GetActivityLogResponse,
-      { page?: number; limit?: number }
-    >({
-      query: ({ page = 1, limit = 10 } = {}) => ({
-        url: "/recent-activity",
-        method: "GET",
-        params: { page, limit },
-      }),
-      providesTags: ["Profile"],
     }),
   }),
   overrideExisting: true,
 });
 
-export const {
-  useGetProfileQuery,
-  useUpdateProfileMutation,
-  useTwoStepVerificationMutation,
-  useGetActivityLogQuery,
-} = profileApi;
+export const { useGetProfileQuery, useUpdateProfileMutation } = profileApi;

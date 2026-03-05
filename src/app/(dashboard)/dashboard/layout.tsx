@@ -23,6 +23,7 @@ export default function DashboardLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+
     return (
         <AuthLayoutWrapper
             allowedRoles={["super_admin"]}
