@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,21 +12,42 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader, Mail } from "lucide-react";
+import { useForgotPasswordMutation } from "@/store/Apis/authApis/authApi";
+import { getApiErrorMessage, type RtkQueryError } from "@/lib/apiError";
 import useToast from "@/hooks/useToast";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+interface ForgotPasswordFormData {
+  email: string;
+}
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ForgotPassword() {
-  const { success, error } = useToast();
-  const [email, setEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const toast = useToast();
+  const router = useRouter();
+  const [forgotPassword, { isLoading: isForgotPasswordLoading }] =
+    useForgotPasswordMutation();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    success("Email sent", {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ForgotPasswordFormData>({
+    defaultValues: { email: "" },
+  });
+
+  const onSubmit = async (data: ForgotPasswordFormData) => {
+    const res = await forgotPassword({ email: data.email });
+    if (res.error) {
+      toast.error(getApiErrorMessage(res.error as RtkQueryError));
+      return;
+    }
+    toast.success("Email sent", {
       description: "Please check your email to reset your password",
     });
-    error("Failed to send email", {
-      description: "Please try again",
-    });
+    Cookies.set("forgetToken", res.data?.data?.forgetToken || "", { expires: 1 });
+    router.push("/auth/verify-email");
   };
 
   return (
@@ -39,7 +61,7 @@ export default function ForgotPassword() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="email" className="text-card-foreground font-medium">
               Enter your email
@@ -50,20 +72,33 @@ export default function ForgotPassword() {
                 id="email"
                 type="email"
                 placeholder="Enter your email to reset your password"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 bg-input/60 border-border/50 text-card-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200"
-                required
+                className={`pl-10 bg-input/60 border-border/50 text-card-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200 ${errors.email ? "border-destructive focus:ring-destructive/50" : ""}`}
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: EMAIL_REGEX,
+                    message: "Please enter a valid email address",
+                  },
+                })}
               />
             </div>
+            {errors.email && (
+              <p className="text-sm text-destructive">{errors.email.message}</p>
+            )}
           </div>
 
           <Button
             type="submit"
-            disabled={isLoading}
-            className="w-full bg-black/70 hover:bg-black text-white hover:text-white  font-medium py-2.5 transition-all duration-200 hover:shadow-lg hover:shadow-secondary/25 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isForgotPasswordLoading}
+            className="w-full bg-black/70 hover:bg-black text-white hover:text-white font-medium py-2.5 transition-all duration-200 hover:shadow-lg hover:shadow-secondary/25 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? <>Sending...{" "}<Loader className="w-4 h-4 animate-spin text-white" /></> : "Reset Password"}
+            {isForgotPasswordLoading ? (
+              <>
+                Sending... <Loader className="inline h-4 w-4 animate-spin" />
+              </>
+            ) : (
+              "Reset Password"
+            )}
           </Button>
         </form>
       </CardContent>

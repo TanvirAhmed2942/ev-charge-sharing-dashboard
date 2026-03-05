@@ -12,25 +12,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Lock, Loader } from "lucide-react";
 import useToast from "@/hooks/useToast";
-
+import { useResetPasswordMutation } from "@/store/Apis/authApis/authApi";
+import { getApiErrorMessage, type RtkQueryError } from "@/lib/apiError";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 export default function ResetPassword() {
   const toast = useToast();
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [resetPassword, { isLoading: isResetPasswordLoading }] =
+    useResetPasswordMutation();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match");
+    const res = await resetPassword({ newPassword, confirmPassword });
+    if (res.error) {
+      toast.error(getApiErrorMessage(res.error as RtkQueryError));
       return;
     }
-    if (newPassword.length < 6) {
-      toast.error("Password must be at least 6 characters long");
-      return;
-    }
+    toast.success("Password reset successfully");
+    Cookies.remove("forgetToken");
+    router.push("/auth/login");
   };
 
   return (
@@ -116,13 +121,13 @@ export default function ResetPassword() {
           <Button
             type="submit"
             disabled={
-              isLoading ||
+              isResetPasswordLoading ||
               newPassword !== confirmPassword ||
               newPassword.length < 6
             }
             className="w-full bg-black/70 hover:bg-black text-white hover:text-white  font-medium py-2.5 transition-all duration-200 hover:shadow-lg hover:shadow-secondary/25 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? <>Resetting...{" "}<Loader className="w-4 h-4 animate-spin text-white" /></> : "Reset Password"}
+            {isResetPasswordLoading ? <>Resetting...{" "}<Loader className="w-4 h-4 animate-spin text-white" /></> : "Reset Password"}
           </Button>
         </form>
       </CardContent>

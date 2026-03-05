@@ -4,9 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import useToast from "@/hooks/useToast";
-
+import { logout } from "@/store/slices/userSlice/userSlice";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 export default function Logout() {
-    const { success, error } = useToast();
+    const { success } = useToast();
+    const router = useRouter();
+    const dispatch = useDispatch();
+    const handleLogout = () => {
+        dispatch(logout());
+        success("Logged out successfully");
+        router.push("/auth/login");
+    }
     return (
         <Card className="rounded-xl border-2 border-red-100 bg-card p-0">
             <CardContent className="flex flex-col items-stretch gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -20,8 +29,7 @@ export default function Logout() {
                     type="button"
                     variant="destructive"
                     onClick={() => {
-                        success("Logged out successfully");
-                        error("Failed to logout");
+                        handleLogout();
                     }}
                     className="flex shrink-0 items-center gap-2 bg-red-500 hover:bg-red-600 sm:ml-auto"
                 >

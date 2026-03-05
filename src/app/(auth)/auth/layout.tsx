@@ -1,3 +1,4 @@
+import { ZapAnimation } from "@/components/auth/LottieZap";
 import Image from "next/image";
 
 export default function AuthLayout({
@@ -17,6 +18,9 @@ export default function AuthLayout({
             className="object-cover "
             priority
           />
+        </div>
+        <div className="absolute top-0 left-0 w-full h-full z-10">
+          <ZapAnimation />
         </div>
       </aside>
 
