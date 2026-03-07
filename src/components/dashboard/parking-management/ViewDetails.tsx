@@ -17,8 +17,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Clock, CheckCircle2, XCircle, Mail, User, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useImageUrl } from "@/hooks/useImageUrl";
 
 export type ParkingStatus = "pending" | "active" | "rejected" | "inactive";
+
+function ParkingDetailImage({ src, alt }: { src: string; alt: string }) {
+    const imageUrl = useImageUrl(src);
+    if (!imageUrl) return null;
+    return (
+        <div className="relative h-full w-full overflow-hidden rounded-lg sm:rounded-xl">
+            <Image
+                src={imageUrl}
+                alt={alt}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 576px, 672px"
+                unoptimized
+            />
+        </div>
+    );
+}
 
 export type ParkingSpaceDetails = {
     title: string;
@@ -107,21 +125,16 @@ export default function ViewDetails({
                                 slidesPerView={1}
                                 loop={images.length > 1}
                             >
-                                {images.map((src, i) => (
+                                {images.map((image, i) => (
                                     <SwiperSlide
                                         key={i}
                                         className="h-full! w-full!"
                                     >
-                                        {src ? (
-                                            <div className="relative h-full w-full overflow-hidden rounded-lg sm:rounded-xl">
-                                                <Image
-                                                    src={src}
-                                                    alt={`${parking.title} - ${i + 1}`}
-                                                    fill
-                                                    className="object-cover"
-                                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 576px, 672px"
-                                                />
-                                            </div>
+                                        {image ? (
+                                            <ParkingDetailImage
+                                                src={image}
+                                                alt={`${parking.title} - ${i + 1}`}
+                                            />
                                         ) : (
                                             <div className="flex h-full w-full items-center justify-center rounded-lg bg-linear-to-br from-slate-200 to-slate-100 sm:rounded-xl dark:from-slate-700 dark:to-slate-800">
                                                 <span className="text-sm text-muted-foreground">
@@ -166,7 +179,7 @@ export default function ViewDetails({
                                 {parking.mapCoordinates ? (
                                     <iframe
                                         title="Location map"
-                                        src={`https://www.google.com/maps?q=${encodeURIComponent(parking.mapCoordinates)}&output=embed`}
+                                        src={`https://www.google.com/maps?q=${encodeURIComponent(parking.mapCoordinates.trim())}&z=16&output=embed`}
                                         className="h-full w-full rounded-lg border-0"
                                         allowFullScreen
                                         loading="lazy"

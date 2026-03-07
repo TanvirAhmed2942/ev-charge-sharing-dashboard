@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { ChevronRight, type LucideIcon } from "lucide-react"
 
 import {
@@ -36,6 +37,15 @@ export function NavBookings({
   }
   groupLabel?: string
 }) {
+  const pathname = usePathname()
+
+  const isItemActive = (url: string) =>
+    pathname === url || (url !== "/" && pathname.startsWith(url + "/"))
+
+  const hasActiveChild = section.items.some(
+    (sub) => "url" in sub && sub.url && isItemActive(sub.url)
+  )
+
   return (
     <SidebarGroup className="pt-4">
       {groupLabel && (
@@ -46,7 +56,7 @@ export function NavBookings({
       <SidebarMenu>
         <Collapsible
           asChild
-          defaultOpen={section.isActive}
+          defaultOpen={section.isActive ?? hasActiveChild}
           className="group/collapsible"
         >
           <SidebarMenuItem>
@@ -62,14 +72,12 @@ export function NavBookings({
                 {section.items.map((subItem) => (
                   <SidebarMenuSubItem key={subItem.title}>
                     {subItem.onClick ? (
-                      <SidebarMenuSubButton
-                        onClick={subItem.onClick}
-                      >
+                      <SidebarMenuSubButton onClick={subItem.onClick}>
                         <span>{subItem.title}</span>
                       </SidebarMenuSubButton>
                     ) : (
-                      <SidebarMenuSubButton asChild>
-                        <Link href={subItem.url}>
+                      <SidebarMenuSubButton asChild isActive={isItemActive(subItem.url)}>
+                        <Link href={subItem.url}  >
                           <span>{subItem.title}</span>
                         </Link>
                       </SidebarMenuSubButton>
