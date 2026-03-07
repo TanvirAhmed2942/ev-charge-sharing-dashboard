@@ -22,6 +22,8 @@ export interface DeleteConfirmationModalProps {
   title?: string;
   description?: string;
   confirmText?: string;
+  /** Shown on confirm button when isLoading (e.g. "Blocking...", "Deleting..."). Default "Deleting..." */
+  loadingText?: string;
   cancelText?: string;
   isLoading?: boolean;
 }
@@ -36,6 +38,7 @@ function DeleteConfirmationModal({
   title = "Delete",
   description = DEFAULT_DESCRIPTION,
   confirmText = "Delete",
+  loadingText = "Deleting...",
   cancelText = "Cancel",
   isLoading = false,
 }: DeleteConfirmationModalProps) {
@@ -80,7 +83,7 @@ function DeleteConfirmationModal({
           >
             {isLoading ? (
               <>
-                Deleting...
+                {loadingText}
                 <Loader className="ml-2 h-4 w-4 animate-spin" />
               </>
             ) : (

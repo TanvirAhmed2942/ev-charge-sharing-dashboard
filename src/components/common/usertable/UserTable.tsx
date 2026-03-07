@@ -19,6 +19,7 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { useImageUrl } from "@/hooks/useImageUrl";
 import { Eye, Ban } from "lucide-react";
 
 export type UserTableUser = {
@@ -35,6 +36,7 @@ type UserTableProps = {
     users: UserTableUser[];
     onView?: (user: UserTableUser) => void;
     onBlock?: (user: UserTableUser) => void;
+    onUnblock?: (user: UserTableUser) => void;
     /** Content to render inside the view sheet. Receives the selected user. */
     sheetContent?: (user: UserTableUser) => React.ReactNode;
 };
@@ -48,10 +50,23 @@ function getInitials(name: string): string {
         .slice(0, 2);
 }
 
+function UserAvatar({ user }: { user: UserTableUser }) {
+    const avatarUrl = useImageUrl(user.avatar ?? "");
+    return (
+        <Avatar className="h-9 w-9">
+            <AvatarImage src={avatarUrl || undefined} alt={user.name} />
+            <AvatarFallback className="text-xs">
+                {getInitials(user.name)}
+            </AvatarFallback>
+        </Avatar>
+    );
+}
+
 export default function UserTable({
     users,
     onView,
     onBlock,
+    onUnblock,
     sheetContent,
 }: UserTableProps) {
     const [sheetOpen, setSheetOpen] = useState(false);
@@ -89,12 +104,7 @@ export default function UserTable({
                                 <TableRow key={user.id}>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <Avatar className="h-9 w-9">
-                                                <AvatarImage src={user.avatar ?? undefined} alt={user.name} />
-                                                <AvatarFallback className="text-xs">
-                                                    {getInitials(user.name)}
-                                                </AvatarFallback>
-                                            </Avatar>
+                                            <UserAvatar user={user} />
                                             <span className="font-medium">{user.name}</span>
                                         </div>
                                     </TableCell>
@@ -127,15 +137,26 @@ export default function UserTable({
                                                 <Eye className="h-3.5 w-3.5" />
                                                 View
                                             </Button>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => onBlock?.(user)}
-                                                className="gap-1.5 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/50 dark:hover:text-red-300"
-                                            >
-                                                <Ban className="h-3.5 w-3.5" />
-                                                Block
-                                            </Button>
+                                            {user.status === "blocked" ? (
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => onUnblock?.(user)}
+                                                    className="gap-1.5 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-950/50 dark:hover:text-emerald-300"
+                                                >
+                                                    Unblock
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => onBlock?.(user)}
+                                                    className="gap-1.5 text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/50 dark:hover:text-red-300"
+                                                >
+                                                    <Ban className="h-3.5 w-3.5" />
+                                                    Block
+                                                </Button>
+                                            )}
                                         </div>
                                     </TableCell>
                                 </TableRow>

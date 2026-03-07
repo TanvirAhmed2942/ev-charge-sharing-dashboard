@@ -82,6 +82,6 @@ const baseQueryWithErrorShape: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithErrorShape,
-  tagTypes: ["Auth", "Profile", "Policies", "Faq", "Commission"],
+  tagTypes: ["Auth", "Profile", "Policies", "Faq", "Commission", "Users"],
   endpoints: () => ({}),
 });
