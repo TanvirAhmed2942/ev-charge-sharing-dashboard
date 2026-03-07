@@ -42,7 +42,7 @@ export default function PaymentInfoModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md text-left">
+            <DialogContent className="sm:max-w-xl text-left">
                 <DialogHeader className="text-left">
                     <DialogTitle>Payment Details</DialogTitle>
                     <p className="text-sm text-muted-foreground font-normal">
@@ -66,11 +66,11 @@ export default function PaymentInfoModal({
                             className={cn(
                                 "rounded-full px-3 py-1 text-xs font-medium",
                                 isSuccess &&
-                                    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300",
+                                "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300",
                                 payment.status === "pending" &&
-                                    "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
+                                "bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300",
                                 payment.status === "failed" &&
-                                    "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"
+                                "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300"
                             )}
                         >
                             {statusLabel(payment.status)}

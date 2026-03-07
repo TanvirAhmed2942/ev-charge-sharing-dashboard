@@ -7,41 +7,21 @@ export interface PaymentUserId {
   role?: string;
 }
 
-export interface PaymentPrescriptionOrder {
+export interface PaymentResultItem {
   _id: string;
-  userId?: string;
-  typeUser?: string;
-  pickupAddress?: string;
-  deliveryAddress?: string;
-  deliveryDate?: string;
-  deliveryTime?: string;
-  email?: string;
-  phone?: string;
-  legalName?: string;
-  dateOfBirth?: string;
-  amount?: number;
-  deliveryInstruction?: string;
-  deliveryCharge?: number;
-  serviceCharge?: number;
-  status?: string;
-  isDeleted?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  __v?: number;
-}
-
-export interface PaymentItem {
-  _id: string;
-  userId?: PaymentUserId;
-  method?: string;
-  amount?: number;
-  status?: string;
-  transactionId?: string;
-  prescriptionOrderId?: PaymentPrescriptionOrder;
-  transactionDate?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  __v?: number;
+  userId: PaymentUserId;
+  method: string;
+  totalAmount: number;
+  ev_place_owner_amount: number;
+  admin_commission_amount: number;
+  status: string;
+  transactionId: string;
+  bookingParkingPlaceId: string;
+  isRefund: boolean;
+  transactionDate: string;
+  createdAt: string;
+  updatedAt: string;
+  ev_place_owner_id: string;
 }
 
 export interface PaymentMeta {
@@ -53,17 +33,17 @@ export interface PaymentMeta {
 
 export interface PaymentResponse {
   success: boolean;
-  message: string;
+  message?: string;
   data: {
     meta: PaymentMeta;
-    result: PaymentItem[];
+    result: PaymentResultItem[];
   };
 }
 
 export interface SinglePaymentResponse {
   success: boolean;
-  message: string;
-  data: PaymentItem;
+  message?: string;
+  data: PaymentResultItem;
 }
 
 export interface PaymentQuery {
@@ -76,23 +56,28 @@ export interface PaymentQuery {
 export const paymentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getPayment: builder.query<PaymentResponse, PaymentQuery | void>({
-      query: (params) => {
-        return {
-          url: "/payment/user",
-          method: "GET",
-          params: params || { page: 1, limit: 10 },
-        };
-      },
-      providesTags: ["Payment"],
+      query: (params) => ({
+        url: "/payment",
+        method: "GET",
+        params: params ?? { page: 1, limit: 10 },
+      }),
+      providesTags: (result) =>
+        result
+          ? [
+              "Payments",
+              ...result.data.result.map(({ _id }) => ({
+                type: "Payments" as const,
+                id: _id,
+              })),
+            ]
+          : ["Payments"],
     }),
     getPaymentById: builder.query<SinglePaymentResponse, string>({
-      query: (id) => {
-        return {
-          url: `/payment/${id}`,
-          method: "GET",
-        };
-      },
-      providesTags: ["Payment"],
+      query: (id) => ({
+        url: `/payment/${id}`,
+        method: "GET",
+      }),
+      providesTags: (_result, _err, id) => [{ type: "Payments", id }],
     }),
   }),
   overrideExisting: true,
