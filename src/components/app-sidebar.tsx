@@ -4,9 +4,9 @@ import * as React from "react"
 import { useState } from "react"
 import {
   BookOpen,
-  GalleryVerticalEnd,
   Settings2,
   Users,
+  Zap,
 } from "lucide-react"
 import { LuLayoutDashboard } from "react-icons/lu";
 import { LuCircleParking } from "react-icons/lu";
@@ -32,9 +32,9 @@ const data = {
     avatar: "/avatars/shadcn.jpg",
   },
   company: {
-    name: "Company Name",
-    logo: GalleryVerticalEnd,
-    plan: "Company Plan",
+    name: "EV Parking",
+    logo: Zap,
+    plan: "Share Charge",
   },
   navMain: [
     {
@@ -44,18 +44,8 @@ const data = {
     },
     {
       title: "User Management",
-      url: "#",
       icon: Users,
-      items: [
-        {
-          title: "EV Owners",
-          url: "/dashboard/user-management/ev-owners",
-        },
-        {
-          title: "Parking Space Owners",
-          url: "/dashboard/user-management/parking-space-owners",
-        },
-      ],
+      url: "/dashboard/user-management",
     },
     {
       title: "Parking Space Management",
