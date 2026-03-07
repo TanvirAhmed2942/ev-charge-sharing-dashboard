@@ -63,6 +63,9 @@ export interface GetActivityLogResponse {
   data?: ActivityLogItem[];
 }
 
+export interface UpdateCommissionRequest {
+  admin_comission: number;
+}
 export const profileApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getProfile: builder.query<GetProfileResponse, void>({
@@ -93,8 +96,23 @@ export const profileApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["Profile"],
     }),
+    updateCommission: builder.mutation<
+      GetProfileResponse,
+      UpdateCommissionRequest
+    >({
+      query: (body) => ({
+        url: "/users/update-comission",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Profile"],
+    }),
   }),
   overrideExisting: true,
 });
 
-export const { useGetProfileQuery, useUpdateProfileMutation } = profileApi;
+export const {
+  useGetProfileQuery,
+  useUpdateProfileMutation,
+  useUpdateCommissionMutation,
+} = profileApi;

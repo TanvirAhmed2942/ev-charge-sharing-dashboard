@@ -42,6 +42,7 @@ export function DashboardHeaderUser({ children }: DashboardHeaderUserProps) {
         phone: profile.phone ?? "",
         role: profile.role ?? "user",
         profile: profile.profile,
+        adminComission: profile.adminComission ?? 0,
       })
     );
   }, [profileData?.data, dispatch]);

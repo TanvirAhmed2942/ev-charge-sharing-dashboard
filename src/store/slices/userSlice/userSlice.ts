@@ -19,6 +19,7 @@ interface User {
   dateOfBirth: string;
   profile?: string;
   isSubscriberUser: boolean;
+  adminComission: number;
 }
 
 export interface UserState {
@@ -43,6 +44,7 @@ const initialState: UserState = {
     dateOfBirth: "",
     isLoggedIn: false,
     isSubscriberUser: false,
+    adminComission: 0,
   },
   isLoggedIn: false,
 };
