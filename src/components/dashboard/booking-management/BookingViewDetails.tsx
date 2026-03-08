@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
     Dialog,
     DialogContent,
@@ -16,22 +15,9 @@ import {
     Calendar,
     Clock,
     Euro,
-    CalendarPlus,
-    CreditCard,
-    CheckCircle2,
-    Zap,
-    CircleCheckBig,
-    type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BookingStatusType, PaymentStatusType } from "@/components/common/bookinglist/BookingListCard";
-
-export type BookingTimelineItem = {
-    title: string;
-    description: string;
-    date?: string;
-    time?: string;
-};
 
 export type BookingDetails = {
     bookingId: string;
@@ -45,16 +31,7 @@ export type BookingDetails = {
     timeRange: string;
     duration: string;
     amount: string;
-    timeLine: BookingTimelineItem[];
 };
-
-const TIMELINE_ICONS: LucideIcon[] = [
-    CalendarPlus,
-    CreditCard,
-    CheckCircle2,
-    Zap,
-    CircleCheckBig,
-];
 
 type BookingViewDetailsProps = {
     open: boolean;
@@ -99,7 +76,7 @@ export default function BookingViewDetails({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="flex h-[90vh] max-h-[90dvh] flex-col gap-0 p-0 w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-full sm:max-w-lg md:max-w-xl">
+            <DialogContent className="flex max-h-[90dvh] flex-col gap-0 p-0 w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-full sm:max-w-lg md:max-w-xl">
                 <DialogHeader className="shrink-0 px-4 pt-4 pb-3 sm:px-6 sm:pt-6 sm:pb-4 text-left">
                     <DialogTitle className="text-base sm:text-lg">
                         Booking Details
@@ -213,49 +190,6 @@ export default function BookingViewDetails({
                                 </p>
                             </CardContent>
                         </Card>
-                        {/* Booking Timeline */}
-                        {booking.timeLine?.length > 0 && (
-                            <div className="space-y-0">
-                                <h4 className="mb-4 text-sm font-bold text-foreground">
-                                    Booking Timeline
-                                </h4>
-                                <div className="rounded-lg border border-border/50 bg-card">
-                                    {booking.timeLine.map((item, index) => {
-                                        const Icon =
-                                            TIMELINE_ICONS[index % TIMELINE_ICONS.length];
-                                        return (
-                                            <div
-                                                key={`${item.title}-${index}`}
-                                                className={cn(
-                                                    "flex gap-4 px-4 py-5 sm:px-5",
-                                                    index < booking.timeLine.length - 1 &&
-                                                    "border-b border-border/50"
-                                                )}
-                                            >
-                                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border/50 bg-muted/30 text-muted-foreground">
-                                                    <Icon className="h-5 w-5" />
-                                                </div>
-                                                <div className="min-w-0 flex-1 space-y-1">
-                                                    <h5 className="text-base font-bold leading-tight text-foreground sm:text-lg">
-                                                        {item.title}
-                                                    </h5>
-                                                    <p className="text-sm font-normal leading-snug text-muted-foreground">
-                                                        {item.description}
-                                                    </p>
-                                                    {(item.date || item.time) && (
-                                                        <p className="text-xs text-muted-foreground/80">
-                                                            {[item.date, item.time]
-                                                                .filter(Boolean)
-                                                                .join(" · ")}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        )}
                     </div>
                 </ScrollArea>
             </DialogContent>

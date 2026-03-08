@@ -5,7 +5,7 @@ export type ParkingPlaceStatus = "pending" | "approved" | "rejected";
 
 export interface ParkingPlaceItem {
   _id: string;
-  userId: string;
+  userId: Owner;
   name: string;
   locationAddress: string;
   price: number;
@@ -24,6 +24,13 @@ export interface ParkingPlaceItem {
   };
 }
 
+export interface Owner {
+  _id: string;
+  profile: string;
+  fullName: string;
+  email: string;
+  role: string;
+}
 export interface ParkingPlacesMeta {
   page: number;
   limit: number;
@@ -45,7 +52,8 @@ export interface GetParkingSpacesParams {
 }
 
 export interface UpdateParkingSpaceRequest {
-  [key: string]: unknown;
+  _id: string;
+  status: "approved" | "rejected";
 }
 
 export const parkingApi = baseApi.injectEndpoints({
@@ -78,13 +86,13 @@ export const parkingApi = baseApi.injectEndpoints({
           : ["ParkingSpaces"],
     }),
     updateParkingSpace: builder.mutation<
-      ParkingPlacesResponse,
+      { success?: boolean; message?: string },
       UpdateParkingSpaceRequest
     >({
-      query: (body) => ({
-        url: "/setting",
+      query: ({ _id, status }) => ({
+        url: `/parking-place/approved/rejected/${_id}`,
         method: "PATCH",
-        body,
+        params: { status },
       }),
       invalidatesTags: ["ParkingSpaces"],
     }),
@@ -92,7 +100,5 @@ export const parkingApi = baseApi.injectEndpoints({
   overrideExisting: true,
 });
 
-export const {
-  useGetParkingSpacesQuery,
-  useUpdateParkingSpaceMutation,
-} = parkingApi;
+export const { useGetParkingSpacesQuery, useUpdateParkingSpaceMutation } =
+  parkingApi;

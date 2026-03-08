@@ -39,6 +39,7 @@ function ParkingDetailImage({ src, alt }: { src: string; alt: string }) {
 }
 
 export type ParkingSpaceDetails = {
+    id?: string;
     title: string;
     address: string;
     status: ParkingStatus;
@@ -60,7 +61,6 @@ type ViewDetailsProps = {
     parking: ParkingSpaceDetails | null;
     onApprove?: () => void;
     onReject?: () => void;
-    onDisable?: () => void;
 };
 
 const statusConfig: Record<
@@ -93,7 +93,6 @@ export default function ViewDetails({
     parking,
     onApprove,
     onReject,
-    onDisable,
 }: ViewDetailsProps) {
     if (!parking) return null;
 
@@ -261,10 +260,7 @@ export default function ViewDetails({
                         <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
                             <Button
                                 type="button"
-                                onClick={() => {
-                                    onApprove?.();
-                                    onOpenChange(false);
-                                }}
+                                onClick={() => onApprove?.()}
                                 className="gap-2 rounded-lg bg-green-600 text-white hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"
                             >
                                 <CheckCircle2 className="h-4 w-4" />
@@ -272,10 +268,7 @@ export default function ViewDetails({
                             </Button>
                             <Button
                                 type="button"
-                                onClick={() => {
-                                    onReject?.();
-                                    onOpenChange(false);
-                                }}
+                                onClick={() => onReject?.()}
                                 className="gap-2 rounded-lg bg-red-600 text-white hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700"
                             >
                                 <XCircle className="h-4 w-4" />
@@ -295,16 +288,7 @@ export default function ViewDetails({
                 {parking.status === "active" && (
                     <footer className="shrink-0 border-t border-border/50 px-4 py-4 sm:px-6">
                         <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
-                            <Button
-                                type="button"
-                                onClick={() => {
-                                    onDisable?.();
-                                    onOpenChange(false);
-                                }}
-                                className="rounded-lg bg-orange-500 text-white hover:bg-orange-600 dark:bg-orange-500 dark:hover:bg-orange-600"
-                            >
-                                Disable Temporarily
-                            </Button>
+
                             <Button
                                 type="button"
                                 variant="secondary"

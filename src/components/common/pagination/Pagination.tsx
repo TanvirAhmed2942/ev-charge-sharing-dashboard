@@ -89,6 +89,8 @@ export default function Pagination({
 
   if (totalPage <= 1 && !showSummary && !onLimitChange) return null;
 
+  const showPageNav = totalPage > 0 && pageNumbers.length > 0;
+
   return (
     <div
       className={cn(
@@ -97,9 +99,11 @@ export default function Pagination({
       )}
     >
       <div className="flex flex-wrap items-center gap-4">
-        {showSummary && total > 0 && (
+        {showSummary && (
           <p className="text-sm text-muted-foreground">
-            Showing {startItem}–{endItem} of {total}
+            {total > 0
+              ? `Showing ${startItem}–${endItem} of ${total}`
+              : "No items"}
           </p>
         )}
         {onLimitChange && (
@@ -126,6 +130,7 @@ export default function Pagination({
         )}
       </div>
 
+      {showPageNav && (
       <ShadcnPagination className="mx-0 w-auto">
         <PaginationContent>
           <PaginationItem>
@@ -212,6 +217,7 @@ export default function Pagination({
           </PaginationItem>
         </PaginationContent>
       </ShadcnPagination>
+      )}
     </div>
   );
 }

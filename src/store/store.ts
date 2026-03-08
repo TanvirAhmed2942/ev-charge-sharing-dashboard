@@ -3,12 +3,14 @@ import { persistStore } from "redux-persist";
 import { combineReducers } from "@reduxjs/toolkit";
 
 import userSlice from "./slices/userSlice/userSlice";
+import bookingCountsReducer from "./slices/bookingCountsSlice/bookingCountsSlice";
 
 import { baseApi } from "./Apis/baseApi";
 
 // Combine reducers
 const rootReducer = combineReducers({
   user: userSlice,
+  bookingCounts: bookingCountsReducer,
   [baseApi.reducerPath]: baseApi.reducer,
 });
 

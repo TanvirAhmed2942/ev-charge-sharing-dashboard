@@ -33,6 +33,7 @@ export function NavBookings({
       title: string
       url: string
       onClick?: () => void
+      count?: number
     }>
   }
   groupLabel?: string
@@ -67,18 +68,32 @@ export function NavBookings({
                 <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
               </SidebarMenuButton>
             </CollapsibleTrigger>
-            <CollapsibleContent>
-              <SidebarMenuSub>
+            <CollapsibleContent className="w-full">
+              <SidebarMenuSub className="w-full">
                 {section.items.map((subItem) => (
                   <SidebarMenuSubItem key={subItem.title}>
                     {subItem.onClick ? (
                       <SidebarMenuSubButton onClick={subItem.onClick}>
-                        <span>{subItem.title}</span>
+                        <span>
+                          {subItem.title}
+                          {subItem.count != null && (
+                            <span className="ml-1.5 text-muted-foreground">
+                              ({subItem.count})
+                            </span>
+                          )}
+                        </span>
                       </SidebarMenuSubButton>
                     ) : (
-                      <SidebarMenuSubButton asChild isActive={isItemActive(subItem.url)}>
-                        <Link href={subItem.url}  >
-                          <span>{subItem.title}</span>
+                      <SidebarMenuSubButton asChild isActive={isItemActive(subItem.url)} className="w-full">
+                        <Link href={subItem.url}>
+                          <span className="w-full flex items-center justify-between">
+                            {subItem.title}
+                            {subItem.count != null && (
+                              <span className="ml-1.5 text-black font-bold flex justify-end bg-gray-200 rounded-lg px-2 py-1">
+                                {subItem.count}
+                              </span>
+                            )}
+                          </span>
                         </Link>
                       </SidebarMenuSubButton>
                     )}

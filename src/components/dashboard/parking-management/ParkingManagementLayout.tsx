@@ -7,9 +7,15 @@ import ViewDetails, {
 } from "@/components/dashboard/parking-management/ViewDetails";
 import SmallPageInfo from "@/components/common/smallPageInfo/smallPageInfo";
 import { usePathname } from "next/navigation";
-import { useGetParkingSpacesQuery } from "@/store/Apis/parkingApi/parkingApi";
+import {
+  useGetParkingSpacesQuery,
+  useUpdateParkingSpaceMutation,
+} from "@/store/Apis/parkingApi/parkingApi";
 import type { ParkingPlaceItem } from "@/store/Apis/parkingApi/parkingApi";
 import type { ParkingStatus } from "@/components/common/parkingcard/ParkingCard";
+import useToast from "@/hooks/useToast";
+import { getApiErrorMessage, type RtkQueryError } from "@/lib/apiError";
+import DeleteConfirmationModal from "@/components/common/deleteconfirmation/deleteConfirmationModal";
 import { Loader } from "lucide-react";
 
 const PATH_TO_STATUS = {
@@ -47,13 +53,15 @@ function formatDate(iso: string): string {
 
 function mapPlaceToDetails(item: ParkingPlaceItem): ParkingSpaceDetails {
   return {
+    id: item._id,
     title: item.name,
     address: item.locationAddress,
     status: apiStatusToUiStatus(item.status),
     availability: item.isActive ? "24/7" : "—",
     pricePerHour: `€${item.price}`,
     pricePerDay: `€${item.price}`,
-    ownerName: "—",
+    ownerName: item.userId?.fullName,
+    ownerEmail: item.userId?.email,
     submissionDate: formatDate(item.createdAt),
     images: item.images ?? [],
     mapCoordinates: `${item.latitude},${item.longitude}`,
@@ -66,6 +74,10 @@ function ParkingManagementLayout() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedParking, setSelectedParking] =
     useState<ParkingSpaceDetails | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<"approve" | "reject" | null>(null);
+  const toast = useToast();
+  const [updateParkingSpace, { isLoading: isUpdating }] = useUpdateParkingSpaceMutation();
 
   const { data, isLoading } = useGetParkingSpacesQuery(
     status ? { status } : undefined,
@@ -83,16 +95,53 @@ function ParkingManagementLayout() {
     setDetailsOpen(true);
   };
 
+  const runApprove = async () => {
+    if (!selectedParking?.id) return;
+    const res = await updateParkingSpace({
+      _id: selectedParking.id,
+      status: "approved",
+    });
+    if (res.error) {
+      toast.error(getApiErrorMessage(res.error as RtkQueryError) ?? "Failed to approve");
+      return;
+    }
+    toast.success("Parking place approved.");
+    setConfirmOpen(false);
+    setConfirmAction(null);
+    setDetailsOpen(false);
+    setSelectedParking(null);
+  };
+
+  const runReject = async () => {
+    if (!selectedParking?.id) return;
+    const res = await updateParkingSpace({
+      _id: selectedParking.id,
+      status: "rejected",
+    });
+    if (res.error) {
+      toast.error(getApiErrorMessage(res.error as RtkQueryError) ?? "Failed to reject");
+      return;
+    }
+    toast.success("Parking place rejected.");
+    setConfirmOpen(false);
+    setConfirmAction(null);
+    setDetailsOpen(false);
+    setSelectedParking(null);
+  };
+
+  const handleConfirmSubmit = async () => {
+    if (confirmAction === "approve") await runApprove();
+    else if (confirmAction === "reject") await runReject();
+  };
+
   const handleApprove = () => {
-    // TODO: e.g. API call to approve selectedParking
+    setConfirmAction("approve");
+    setConfirmOpen(true);
   };
 
   const handleReject = () => {
-    // TODO: e.g. API call to reject selectedParking
-  };
-
-  const handleDisable = () => {
-    // TODO: e.g. API call to disable selectedParking temporarily
+    setConfirmAction("reject");
+    setConfirmOpen(true);
   };
 
   const showApproveReject =
@@ -129,8 +178,24 @@ function ParkingManagementLayout() {
               ownerName={parking.ownerName ?? "—"}
               status={parking.status}
               onViewDetails={() => handleViewDetails(parking)}
-              onApprove={showApproveReject ? () => {} : undefined}
-              onReject={showApproveReject ? () => {} : undefined}
+              onApprove={
+                showApproveReject
+                  ? () => {
+                      setSelectedParking(parking);
+                      setConfirmAction("approve");
+                      setConfirmOpen(true);
+                    }
+                  : undefined
+              }
+              onReject={
+                showApproveReject
+                  ? () => {
+                      setSelectedParking(parking);
+                      setConfirmAction("reject");
+                      setConfirmOpen(true);
+                    }
+                  : undefined
+              }
             />
           ))}
         </div>
@@ -141,7 +206,25 @@ function ParkingManagementLayout() {
         parking={selectedParking}
         onApprove={handleApprove}
         onReject={handleReject}
-        onDisable={handleDisable}
+      />
+      <DeleteConfirmationModal
+        open={confirmOpen}
+        onOpenChange={(open) => {
+          setConfirmOpen(open);
+          if (!open) setConfirmAction(null);
+        }}
+        onConfirm={handleConfirmSubmit}
+        title={confirmAction === "approve" ? "Approve parking place?" : "Reject parking place?"}
+        description={
+          confirmAction === "approve"
+            ? "This listing will be approved and visible to users."
+            : "This listing will be rejected and removed from active listings."
+        }
+        confirmText={confirmAction === "approve" ? "Approve" : "Reject"}
+        loadingText={confirmAction === "approve" ? "Approving..." : "Rejecting..."}
+        cancelText="Cancel"
+        isLoading={isUpdating}
+        confirmVariant={confirmAction === "approve" ? "default" : "destructive"}
       />
     </div>
   );

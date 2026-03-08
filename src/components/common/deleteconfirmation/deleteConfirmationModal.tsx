@@ -26,6 +26,8 @@ export interface DeleteConfirmationModalProps {
   loadingText?: string;
   cancelText?: string;
   isLoading?: boolean;
+  /** Confirm button style: "destructive" (red) or "default" (primary). Default "destructive". */
+  confirmVariant?: "default" | "destructive";
 }
 
 const DEFAULT_DESCRIPTION =
@@ -41,6 +43,7 @@ function DeleteConfirmationModal({
   loadingText = "Deleting...",
   cancelText = "Cancel",
   isLoading = false,
+  confirmVariant = "destructive",
 }: DeleteConfirmationModalProps) {
   const handleConfirm = async () => {
     await onConfirm();
@@ -77,9 +80,10 @@ function DeleteConfirmationModal({
             {cancelText}
           </Button>
           <Button
-            variant="destructive"
+            variant={confirmVariant}
             onClick={handleConfirm}
             disabled={isLoading}
+            className={confirmVariant === "destructive" ? undefined : "bg-green-600 hover:bg-green-700"}
           >
             {isLoading ? (
               <>

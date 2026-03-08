@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import {
   BookOpen,
   Settings2,
@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/sidebar"
 import { NavBookings } from "./nav-projects"
 import CommissionSettingsModal from "@/components/settings/CommissionSettingsModal"
+import { BookingCountsFetcher } from "@/components/dashboard/booking-management/BookingCountsFetcher"
+import { useAppSelector } from "@/store/hooks"
 
 // This is sample data.
 const data = {
@@ -98,8 +100,22 @@ const data = {
   },
 }
 
+const COUNT_KEYS = ["upcoming", "ongoing", "completed", "declined"] as const
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [commissionModalOpen, setCommissionModalOpen] = useState(false)
+  const counts = useAppSelector((state) => state.bookingCounts)
+
+  const bookingSection = useMemo(
+    () => ({
+      ...data.booking,
+      items: data.booking.items.map((item, index) => ({
+        ...item,
+        count: COUNT_KEYS[index] != null ? counts[COUNT_KEYS[index]] : undefined,
+      })),
+    }),
+    [counts]
+  )
 
   const settingsSection = {
     ...data.settings,
@@ -112,13 +128,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <>
+      <BookingCountsFetcher />
       <Sidebar collapsible="icon" {...props} className="bg-linear-to-b from-emerald-900 to-emerald-600">
         <SidebarHeader>
           <TeamSwitcher company={data.company} />
         </SidebarHeader>
         <SidebarContent>
           <NavMain items={data.navMain} groupLabel="Platform" />
-          <NavBookings section={data.booking} groupLabel="Booking" />
+          <NavBookings section={bookingSection} groupLabel="Booking"  />
           <NavBookings section={settingsSection} groupLabel="Settings" />
         </SidebarContent>
         <SidebarFooter>
