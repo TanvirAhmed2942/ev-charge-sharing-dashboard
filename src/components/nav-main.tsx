@@ -32,6 +32,7 @@ export function NavMain({
     items?: {
       title: string
       url: string
+      count?: number
     }[]
   }[]
   groupLabel?: string
@@ -76,13 +77,20 @@ export function NavMain({
                     </Link>
                   </SidebarMenuButton>
                 )}
-                <CollapsibleContent>
-                  <SidebarMenuSub>
+                <CollapsibleContent className="w-full">
+                  <SidebarMenuSub className="w-full">
                     {item.items?.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
                         <SidebarMenuSubButton asChild isActive={isItemActive(subItem.url)}>
                           <Link href={subItem.url}>
-                            <span>{subItem.title}</span>
+                            <span className="w-full flex items-center justify-between">
+                              {subItem.title}
+                              {subItem.count != null && (
+                                <span className="ml-1.5 text-black font-bold flex justify-end bg-gray-200 rounded-lg px-2 py-1">
+                                  {subItem.count}
+                                </span>
+                              )}
+                            </span>
                           </Link>
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>

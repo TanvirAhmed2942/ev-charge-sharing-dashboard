@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { cn } from "@/lib/utils";
 import {
     Card,
@@ -23,19 +23,26 @@ export type BookingTrendsDataPoint = {
     bookings: number;
 };
 
+export type BookingPeriod = "weekly" | "monthly";
+
+const PERIODS: { value: BookingPeriod; label: string }[] = [
+    { value: "weekly", label: "Weekly" },
+    { value: "monthly", label: "Monthly" },
+];
+
 type BookingTrendsBarchartProps = {
     data: BookingTrendsDataPoint[];
+    period?: BookingPeriod;
+    onPeriodChange?: (period: BookingPeriod) => void;
     className?: string;
 };
 
-const PERIODS = ["Daily", "Monthly"] as const;
-
 export default function BookingTrendsBarchart({
     data,
+    period = "weekly",
+    onPeriodChange,
     className,
 }: BookingTrendsBarchartProps) {
-    const [period, setPeriod] = useState<"Daily" | "Monthly">("Daily");
-
     return (
         <Card className={cn("rounded-xl border bg-card", className)}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 px-6 pb-2">
@@ -45,17 +52,17 @@ export default function BookingTrendsBarchart({
                 <div className="flex rounded-lg border bg-muted/30 p-0.5">
                     {PERIODS.map((p) => (
                         <button
-                            key={p}
+                            key={p.value}
                             type="button"
-                            onClick={() => setPeriod(p)}
+                            onClick={() => onPeriodChange?.(p.value)}
                             className={cn(
                                 "rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
-                                period === p
+                                period === p.value
                                     ? "bg-sky-500 text-white"
                                     : "bg-transparent text-muted-foreground hover:text-foreground"
                             )}
                         >
-                            {p}
+                            {p.label}
                         </button>
                     ))}
                 </div>

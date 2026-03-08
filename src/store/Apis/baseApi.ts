@@ -92,6 +92,7 @@ export const baseApi = createApi({
     "ParkingSpaces",
     "Payments",
     "Bookings",
+    "Dashboard",
   ],
   endpoints: () => ({}),
 });

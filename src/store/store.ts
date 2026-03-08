@@ -4,6 +4,7 @@ import { combineReducers } from "@reduxjs/toolkit";
 
 import userSlice from "./slices/userSlice/userSlice";
 import bookingCountsReducer from "./slices/bookingCountsSlice/bookingCountsSlice";
+import parkingCountsReducer from "./slices/parkingCountsSlice/parkingCountsSlice";
 
 import { baseApi } from "./Apis/baseApi";
 
@@ -11,6 +12,7 @@ import { baseApi } from "./Apis/baseApi";
 const rootReducer = combineReducers({
   user: userSlice,
   bookingCounts: bookingCountsReducer,
+  parkingCounts: parkingCountsReducer,
   [baseApi.reducerPath]: baseApi.reducer,
 });
 
