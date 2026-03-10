@@ -48,7 +48,7 @@ export const notificationApi = baseApi.injectEndpoints({
           params: params || { page: 1, limit: 10 },
         };
       },
-      providesTags: ["Notification"],
+      providesTags: ["Notifications"],
     }),
     markAllAsRead: builder.mutation<NotificationResponse, void>({
       query: () => {
@@ -57,7 +57,7 @@ export const notificationApi = baseApi.injectEndpoints({
           method: "POST",
         };
       },
-      invalidatesTags: ["Notification"],
+      invalidatesTags: ["Notifications"],
     }),
     markAsRead: builder.mutation<NotificationResponse, string>({
       query: (id) => {
@@ -66,7 +66,7 @@ export const notificationApi = baseApi.injectEndpoints({
           method: "PATCH",
         };
       },
-      invalidatesTags: ["Notification"],
+      invalidatesTags: ["Notifications"],
     }),
   }),
   overrideExisting: true,
