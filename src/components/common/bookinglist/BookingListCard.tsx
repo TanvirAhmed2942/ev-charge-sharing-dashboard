@@ -78,7 +78,6 @@ export default function BookingListCard({
             )}
         >
             <CardContent className="flex flex-col gap-4 px-4 sm:px-6">
-                {/* Top: Booking ID, badges, amount, View Details */}
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="font-bold text-foreground">
@@ -121,7 +120,6 @@ export default function BookingListCard({
                     </div>
                 </div>
 
-                {/* Two-column details: User, Time | Location, Date */}
                 <div className="grid grid-cols-1 gap-x-6 gap-y-2 text-sm text-muted-foreground sm:grid-cols-2">
                     <div className="flex items-center gap-2">
                         <User className="h-4 w-4 shrink-0" />

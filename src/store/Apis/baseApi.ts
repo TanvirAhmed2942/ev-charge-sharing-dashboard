@@ -7,7 +7,6 @@ import type {
 
 export const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-// Helper function to get cookie value
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
 
@@ -24,7 +23,6 @@ function getCookie(name: string): string | null {
 const rawBaseQuery = fetchBaseQuery({
   baseUrl,
   prepareHeaders: (headers, { endpoint, type }) => {
-    // Get tokens from cookies only
     const token = getCookie("token");
     const verifyToken = getCookie("verifyToken");
 
