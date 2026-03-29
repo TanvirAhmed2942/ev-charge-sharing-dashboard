@@ -1,20 +1,26 @@
+
 import { AppSidebar } from "@/components/app-sidebar";
-import { Button } from "@/components/ui/button";
+
 import { Separator } from "@/components/ui/separator";
 import {
     SidebarInset,
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Bell } from "lucide-react";
+
 import { DashboardHeaderUser } from "@/components/dashboard/DashboardHeaderUser";
 import AuthLayoutWrapper from "@/components/auth/AuthLayoutWrapper";
+import Notification from "@/components/common/notification/Notification";
+
+
 
 export default function DashboardLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+
+
 
     return (
         <AuthLayoutWrapper
@@ -46,12 +52,3 @@ export default function DashboardLayout({
     )
 }
 
-function Notification() {
-    return (
-        <div className="flex items-center gap-2">
-            <Button variant="outline" size="icon" className="rounded-full hover:bg-muted">
-                <Bell className="size-4" />
-            </Button>
-        </div>
-    )
-}
