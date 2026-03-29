@@ -3,25 +3,33 @@
 import { Button } from "@/components/ui/button";
 import { socketForNewNotification } from "@/socket/socket";
 import { selectUser } from "@/store/slices/userSlice/userSlice";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { baseApi } from "@/store/Apis/baseApi";
+import { useGetDashboardOverviewQuery } from "@/store/Apis/dashboardApi/dashboardApi";
 import { cn } from "@/lib/utils";
 import { Bell } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export default function Notification() {
-  const [notificationCount, setNotificationCount] = useState(0);
+  const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
+  const { data: overview } = useGetDashboardOverviewQuery({
+    revenuestatus: "monthly",
+    bookingstatus: "weekly",
+  });
+  const notificationCount = overview?.data?.pendingNotification ?? 0;
 
   useEffect(() => {
     const userId = user?._id;
-    console.log("userId", userId);
     if (!userId) return;
 
     const cleanup = socketForNewNotification(userId, () => {
-      setNotificationCount((c) => c + 1);
+      dispatch(
+        baseApi.util.invalidateTags(["Notifications", "Dashboard"]),
+      );
     });
     return cleanup;
-  }, [user._id]);
+  }, [dispatch, user?._id]);
 
   const badgeText =
     notificationCount > 99 ? "99+" : String(notificationCount);

@@ -20,7 +20,7 @@ export type ParkingSpaceItem = {
     rank: number;
     name: string;
     bookings: number;
-    revenue: string;
+    revenue: number;
     /** 0–100, used for progress bar width */
     progress: number;
     progressColor?: keyof typeof PROGRESS_COLOR_CLASSES;
@@ -63,7 +63,11 @@ export default function ParkingSpaces({ items, className }: ParkingSpacesProps) 
                             {item.bookings} bookings
                         </span>
                         <span className="shrink-0 text-sm font-medium text-foreground">
-                            {item.revenue}
+                            €
+                            {Number(item.revenue).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                            })}
                         </span>
                     </div>
                 ))}

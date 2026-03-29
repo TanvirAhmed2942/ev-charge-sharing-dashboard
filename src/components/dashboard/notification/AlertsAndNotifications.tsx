@@ -22,22 +22,32 @@ export type AlertItem = {
 
 type AlertsAndNotificationsProps = {
     items?: AlertItem[];
+    /** Unread / pending notification count from dashboard overview (refreshed on socket). */
+    unreadCount?: number;
     className?: string;
 };
 
-const defaultAlert: AlertItem = {
-    id: "pending-approvals",
-    title: "Pending parking space approvals",
-    description: "12 new parking spaces awaiting approval",
-    count: 12,
-    actionLabel: "Review Now",
-    actionHref: "#",
-};
+function buildDefaultAlert(unreadCount: number): AlertItem {
+    return {
+        id: "pending-approvals",
+        title: "Pending Notifications need your attention",
+        description:
+            unreadCount === 0
+                ? "You're all caught up. No new notifications need your attention."
+                : `${unreadCount} new notification${unreadCount === 1 ? "" : "s"} need your attention`,
+        count: unreadCount,
+        actionLabel: "Review Now",
+        actionHref: "/dashboard/notifications",
+    };
+}
 
 export default function AlertsAndNotifications({
-    items = [defaultAlert],
+    items,
+    unreadCount = 0,
     className,
 }: AlertsAndNotificationsProps) {
+    const resolvedItems =
+        items ?? [buildDefaultAlert(unreadCount)];
     return (
         <Card
             className={cn(
@@ -51,7 +61,7 @@ export default function AlertsAndNotifications({
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 px-6 pb-6 pt-0">
-                {items.map((alert) => (
+                {resolvedItems.map((alert) => (
                     <div key={alert.id} className="space-y-3">
                         <div className="flex items-start gap-3">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40">

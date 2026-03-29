@@ -93,7 +93,7 @@ function OverviewLayout() {
       rank: index + 1,
       name: item.parkingName ?? "—",
       bookings: item.totalBookings ?? 0,
-      revenue: `€${item.totalAmount ?? 0}`,
+      revenue: Number(item.totalAmount) || 0,
       progress: Math.round((item.totalBookings / maxBookings) * 100),
       progressColor: PROGRESS_COLORS[index % PROGRESS_COLORS.length],
     }));
@@ -136,7 +136,9 @@ function OverviewLayout() {
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <ParkingSpaces items={topParkingSpaces} />
-        <AlertsAndNotifications />
+        <AlertsAndNotifications
+          unreadCount={data?.data?.pendingNotification ?? 0}
+        />
       </div>
     </div>
   );

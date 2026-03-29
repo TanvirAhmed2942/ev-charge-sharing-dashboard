@@ -10,21 +10,29 @@ import { TbBellRinging2 } from "react-icons/tb";
 import { HiOutlineBell } from "react-icons/hi";
 import { Button } from "@/components/ui/button";
 import formatTimeAgo from "@/utils/xtimesAgo";
+import type { NotificationItem } from "@/store/Apis/notificationApi/notificatioAnpi";
+import { cn } from "@/lib/utils";
 
-export type NotificationItem = {
-  _id?: string;
-  message?: string;
-  createdAt?: string;
-  isRead?: boolean;
+export type { NotificationItem };
+
+const typeAccent: Record<string, string> = {
+  success: "border-l-emerald-500",
+  error: "border-l-destructive",
+  warning: "border-l-amber-500",
+  info: "border-l-sky-500",
 };
 
 type AllNotificationsProps = {
-  notifications?: NotificationItem[] | { result?: NotificationItem[] };
+  notifications?: NotificationItem[];
   isLoading?: boolean;
   meta?: { page?: number; limit?: number; total?: number; totalPage?: number };
   page?: number;
   setPage: (page: number) => void;
-  userRole?: string;
+  onMarkAllAsRead?: () => void | Promise<void>;
+  onMarkAsRead?: (id: string) => void | Promise<void>;
+  isMarkingAllRead?: boolean;
+  markingId?: string | null;
+  markAllDisabled?: boolean;
 };
 
 function AllNotifications({
@@ -33,13 +41,15 @@ function AllNotifications({
   meta = {},
   page = 1,
   setPage,
-  userRole,
+  onMarkAllAsRead,
+  onMarkAsRead,
+  isMarkingAllRead = false,
+  markingId = null,
+  markAllDisabled = false,
 }: AllNotificationsProps) {
-  const totalPages = meta?.totalPage || 1;
+  const totalPages = Math.max(meta?.totalPage ?? 1, 1);
 
-  const list: NotificationItem[] = Array.isArray(notifications)
-    ? notifications
-    : (notifications?.result ?? []);
+  const list = notifications;
 
   const handlePreviousPage = () => {
     if (page > 1) setPage(page - 1);
@@ -83,7 +93,7 @@ function AllNotifications({
 
   if (isLoading) {
     return (
-      <Card className="bg-transparent min-h-[calc(100vh-11.5rem)]">
+      <Card className="min-h-[calc(100vh-11.5rem)] bg-transparent">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TbBellRinging2 size={20} />
@@ -98,60 +108,91 @@ function AllNotifications({
   }
 
   return (
-    <Card className="bg-transparent min-h-[calc(100vh-11.5rem)] ">
+    <Card className="min-h-[calc(100vh-11.5rem)] bg-transparent">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TbBellRinging2 size={20} />
           All Notifications
         </CardTitle>
         <CardAction>
-          <Button className="" disabled>
-            Mark all as read
+          <Button
+            type="button"
+            disabled={
+              markAllDisabled || list.length === 0 || isMarkingAllRead || !onMarkAllAsRead
+            }
+            onClick={() => void onMarkAllAsRead?.()}
+          >
+            {isMarkingAllRead ? "Updating…" : "Mark all as read"}
           </Button>
         </CardAction>
       </CardHeader>
       <CardContent className="space-y-2">
         {list.length > 0 ? (
           <>
-            {list.map((notification: NotificationItem) => (
-              <div
-                key={notification?._id}
-                className={`flex items-start md:items-center justify-between gap-2 border bg-white p-2 rounded-lg ${!notification?.isRead ? "border-l-4 border-l-emerald-500" : ""
-                  }`}
-              >
-                <div className="flex items-start gap-2">
-                  <HiOutlineBell size={20} className="mt-1" />
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold">
-                      {notification?.message}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {formatTimeAgo(notification?.createdAt ?? "")}
-                    </p>
-                  </div>
-                </div>
-
-                {!notification?.isRead &&
-                  userRole !== "super_admin" && (
-                    <Button variant="outline" className="bg-white" disabled>
-                      Mark as read
-                    </Button>
+            {list.map((notification) => {
+              const accent =
+                typeAccent[notification.type] ?? "border-l-emerald-500";
+              return (
+                <div
+                  key={notification._id}
+                  className={cn(
+                    "flex items-start justify-between gap-2 rounded-lg border bg-white p-2 md:items-center",
+                    !notification.isRead && `border-l-4 ${accent}`,
                   )}
-              </div>
-            ))}
+                >
+                  <div className="flex items-start gap-2">
+                    <HiOutlineBell size={20} className="mt-1 shrink-0" />
+                    <div className="min-w-0 space-y-1">
+                      <p className="text-sm font-semibold text-foreground">
+                        {notification.title}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {notification.message}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-500">
+                        <span>{formatTimeAgo(notification.createdAt)}</span>
+                        {notification.role ? (
+                          <span className="text-muted-foreground">
+                            · {notification.role}
+                          </span>
+                        ) : null}
+                        {notification.status ? (
+                          <span className="capitalize text-muted-foreground">
+                            · {notification.status}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+
+                  {!notification.isRead && onMarkAsRead ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="shrink-0 bg-white"
+                      disabled={markingId === notification._id}
+                      onClick={() => void onMarkAsRead(notification._id)}
+                    >
+                      {markingId === notification._id ? "…" : "Mark as read"}
+                    </Button>
+                  ) : null}
+                </div>
+              );
+            })}
 
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 mt-6 pt-4 border-t">
+              <div className="mt-6 flex items-center justify-center gap-2 border-t pt-4">
                 <Button
                   variant="outline"
                   size="sm"
+                  type="button"
                   onClick={handlePreviousPage}
                   disabled={page === 1}
                 >
                   Previous
                 </Button>
 
-                {getPageNumbers().map((pageNum: number | string, index: number) =>
+                {getPageNumbers().map((pageNum, index) =>
                   pageNum === "..." ? (
                     <span
                       key={`ellipsis-${index}`}
@@ -164,7 +205,10 @@ function AllNotifications({
                       key={pageNum}
                       variant={page === pageNum ? "default" : "outline"}
                       size="sm"
-                      onClick={() => typeof pageNum === "number" && handlePageClick(pageNum)}
+                      type="button"
+                      onClick={() =>
+                        typeof pageNum === "number" && handlePageClick(pageNum)
+                      }
                       className="min-w-[40px]"
                     >
                       {pageNum}
@@ -175,6 +219,7 @@ function AllNotifications({
                 <Button
                   variant="outline"
                   size="sm"
+                  type="button"
                   onClick={handleNextPage}
                   disabled={page === totalPages}
                 >
