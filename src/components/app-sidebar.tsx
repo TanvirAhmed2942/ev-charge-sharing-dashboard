@@ -28,14 +28,10 @@ import { ParkingCountsFetcher } from "@/components/dashboard/parking-management/
 import { useAppSelector } from "@/store/hooks"
 
 const PARKING_COUNT_KEYS = ["pending", "approved", "rejected"] as const
-
+import { selectUser } from "@/store/slices/userSlice/userSlice"
 // This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
+
   company: {
     name: "EV Parking",
     logo: Zap,
@@ -109,7 +105,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [commissionModalOpen, setCommissionModalOpen] = useState(false)
   const counts = useAppSelector((state) => state.bookingCounts)
   const parkingCounts = useAppSelector((state) => state.parkingCounts)
-
+  const user = useAppSelector(selectUser)
+  console.log("user", user)
   const navMainWithParkingCounts = useMemo(
     () =>
       data.navMain.map((item) => {
@@ -159,7 +156,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavBookings section={settingsSection} groupLabel="Settings" />
         </SidebarContent>
         <SidebarFooter>
-          <NavUser user={data.user} />
+          <NavUser user={{
+            name: user.name || "",
+            email: user.email || "",
+            profile: user.profile || "",
+          }} />
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>

@@ -27,6 +27,10 @@ export interface UserState {
   isLoggedIn: boolean;
 }
 
+interface CredentialsPayload {
+  accessToken: string;
+}
+
 const initialState: UserState = {
   user: {
     name: "",
@@ -69,8 +73,16 @@ const userSlice = createSlice({
       // Clear cookies and localStorage on logout
       if (typeof window !== "undefined") {
         Cookies.remove("token");
+        Cookies.remove("accessToken");
         Cookies.remove("refreshToken");
         Cookies.remove("userData");
+      }
+    },
+    setCredentials: (_state, action: PayloadAction<CredentialsPayload>) => {
+      if (typeof window !== "undefined") {
+        Cookies.set("token", action.payload.accessToken);
+        // Keep this for existing socket usage that reads accessToken cookie.
+        Cookies.set("accessToken", action.payload.accessToken);
       }
     },
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
@@ -82,7 +94,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { login, logout, updateUser } = userSlice.actions;
+export const { login, logout, setCredentials, updateUser } = userSlice.actions;
 
 // Selectors
 export const selectUser = (state: RootState) => state.user.user;

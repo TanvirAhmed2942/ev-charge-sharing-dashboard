@@ -4,8 +4,17 @@ import type {
   FetchArgs,
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query";
+import { logout, setCredentials } from "@/store/slices/userSlice/userSlice";
 
 export const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+interface RefreshTokenResponse {
+  success?: boolean;
+  message?: string;
+  data?: {
+    accessToken?: string;
+  };
+}
 
 function getCookie(name: string): string | null {
   if (typeof document === "undefined") return null;
@@ -48,38 +57,55 @@ const rawBaseQuery = fetchBaseQuery({
   },
 });
 
-/**
- * Base query that normalizes API error responses.
- * Use getApiErrorMessage(error) from @/lib/apiError to show user-facing messages.
- */
-const baseQueryWithErrorShape: BaseQueryFn<
+function normalizeErrorResponse(error: FetchBaseQueryError | undefined): void {
+  if (!error || Number(error.status) < 400 || !error.data) return;
+
+  const data = error.data as Record<string, unknown>;
+  if (typeof data?.message === "string" || Array.isArray(data?.errorSources)) {
+    error.data = {
+      message: typeof data.message === "string" ? data.message : undefined,
+      errorSources: Array.isArray(data.errorSources) ? data.errorSources : undefined,
+      err: data.err,
+    };
+  }
+}
+
+const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  const result = await rawBaseQuery(args, api, extraOptions);
-  const err = result.error;
-  if (err && Number(err.status) >= 400 && err.data) {
-    const data = err.data as Record<string, unknown>;
-    if (
-      typeof data?.message === "string" ||
-      Array.isArray(data?.errorSources)
-    ) {
-      err.data = {
-        message: typeof data.message === "string" ? data.message : undefined,
-        errorSources: Array.isArray(data.errorSources)
-          ? data.errorSources
-          : undefined,
-        err: data.err,
-      };
+  let result = await rawBaseQuery(args, api, extraOptions);
+
+  if (result.error && Number(result.error.status) === 401) {
+    const requestUrl = typeof args === "string" ? args : args.url;
+    const isRefreshRequest = requestUrl.includes("/auth/refresh-token");
+
+    if (!isRefreshRequest) {
+      const refreshResult = await rawBaseQuery("/auth/refresh-token", api, extraOptions);
+      if (refreshResult.data) {
+        const refreshData = refreshResult.data as RefreshTokenResponse;
+        const newAccessToken = refreshData?.data?.accessToken;
+
+        if (newAccessToken) {
+          api.dispatch(setCredentials({ accessToken: newAccessToken }));
+          result = await rawBaseQuery(args, api, extraOptions);
+        } else {
+          api.dispatch(logout());
+        }
+      } else {
+        api.dispatch(logout());
+      }
     }
   }
+
+  normalizeErrorResponse(result.error);
   return result;
 };
 
 export const baseApi = createApi({
   reducerPath: "api",
-  baseQuery: baseQueryWithErrorShape,
+  baseQuery: baseQueryWithReauth,
   tagTypes: [
     "Auth",
     "Profile",
