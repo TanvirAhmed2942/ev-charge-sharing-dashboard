@@ -24,8 +24,10 @@ function restoreAuthState() {
           const parts = token.split(".");
           if (parts.length === 3) {
             const payload = JSON.parse(atob(parts[1]));
-            if (payload.exp && payload.exp * 1000 < Date.now()) {
-              // Token expired, clear everything
+            const accessExpired =
+              payload.exp && payload.exp * 1000 < Date.now();
+            const hasRefresh = Boolean(Cookies.get("refreshToken"));
+            if (accessExpired && !hasRefresh) {
               localStorage.removeItem("userData");
               return;
             }
@@ -46,7 +48,9 @@ function restoreAuthState() {
       const parts = token.split(".");
       if (parts.length === 3) {
         const payload = JSON.parse(atob(parts[1]));
-        if (payload.exp && payload.exp * 1000 < Date.now()) {
+        const accessExpired = payload.exp && payload.exp * 1000 < Date.now();
+        const hasRefresh = Boolean(Cookies.get("refreshToken"));
+        if (accessExpired && !hasRefresh) {
           return;
         }
         store.dispatch(

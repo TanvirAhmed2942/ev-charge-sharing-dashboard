@@ -15,6 +15,7 @@ export default function AuthLayout({
             src="/auth/auth_33.png"
             alt=""
             fill
+            sizes="(min-width: 1280px) 55vw, 50vw"
             className="object-cover "
             priority
           />

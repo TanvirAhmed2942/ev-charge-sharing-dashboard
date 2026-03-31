@@ -68,8 +68,8 @@ export default function RevenueTrendsBarchart({
                 </div>
             </CardHeader>
             <CardContent className="px-6 pb-6 pt-2">
-                <div className="h-[280px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
+                <div className="h-[280px] w-full min-w-0">
+                    <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={280}>
                         <AreaChart
                             data={data}
                             margin={{ top: 8, right: 8, left: 0, bottom: 0 }}

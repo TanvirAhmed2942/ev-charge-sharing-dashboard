@@ -7,15 +7,21 @@ export function isAuthenticated(): boolean {
   if (typeof window === "undefined") return false;
   const token = Cookies.get("token");
   if (!token) return false;
+
+  const hasRefresh = Boolean(Cookies.get("refreshToken"));
+
   try {
     const parts = token.split(".");
     if (parts.length === 3) {
       const payload = JSON.parse(atob(parts[1]));
-      if (payload.exp && payload.exp * 1000 < Date.now()) return false;
+      if (payload.exp && payload.exp * 1000 < Date.now()) {
+        // Access JWT expired; if refresh exists, RTK baseQuery can still renew the session.
+        return hasRefresh;
+      }
     }
     return true;
   } catch {
-    return false;
+    return hasRefresh;
   }
 }
 
